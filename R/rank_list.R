@@ -1,23 +1,45 @@
 # Create label tags for rank_list
 as_label_tags <- function(labels) {
-  mapply(
-    USE.NAMES = FALSE,
-    SIMPLIFY = FALSE,
-    labels,
-    label_ids(labels),
-    FUN = function(label, label_id) {
-      if (identical(label_id, "")) {
-        label_id <- NULL
+  if(is.list(labels)) {    
+    list2div(labels)
+  } else {
+    mapply(
+      USE.NAMES = FALSE,
+      SIMPLIFY = FALSE,
+      labels,
+      label_ids(labels),
+      FUN = function(label, label_id) {
+        if (identical(label_id, "")) {
+          label_id <- NULL
+        }
+        tags$div(
+          class = "rank-list-item",
+          "data-rank-id" = label_id,
+          label
+        )
       }
-      tags$div(
-        class = "rank-list-item",
-        "data-rank-id" = label_id,
-        label
-      )
-    }
-  )
+    )
+  }
 }
 
+# Create label tags for rank_list from a list
+list2div <- function(x) {
+  stopifnot(is.list(x))
+  tags_list <- tagList()
+
+  for (id in names(x)) {
+    ctags <- NULL
+    for (att in names(x[[id]])) {
+      if (att == "label") {
+        ctag <- tags$div(x[[id]][[att]], class = "rank-list-item", "data-rank-id" = id)
+      } else {
+        ctag <- do.call(tagAppendAttributes, c(list(ctag), x[[id]][att]))
+      }
+    }
+    tags_list <- tagAppendChild(tags_list, ctag)
+  }
+  tags_list
+}
 
 #' Create a ranking item list.
 #'
