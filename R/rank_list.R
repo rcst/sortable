@@ -28,7 +28,6 @@ list2div <- function(x) {
   tags_list <- tagList()
 
   for (id in names(x)) {
-    ctags <- NULL
     for (att in names(x[[id]])) {
       if (att == "label") {
         ctag <- tags$div(x[[id]][[att]], class = "rank-list-item", "data-rank-id" = id)
